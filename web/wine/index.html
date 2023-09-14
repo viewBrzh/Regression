@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Data Records</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Wine Data Records</h1>
+        <a href="/redwine_view/insert" class="btn btn-primary mt-2">Add New Record</a>
+        <a href="/redwine_view/predict" class="btn btn-primary mt-2">Predict</a>
+        <div class="row mt-4">
+            <div class="col">
+                <h2>Wine Records</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fixed Acidity</th>
+                                <th>Volatile Acidity</th>
+                                <th>Citric Acid</th>
+                                <th>Residual Sugar</th>
+                                <th>Chlorides</th>
+                                <th>Free Sulfur Dioxide</th>
+                                <th>Total Sulfur Dioxide</th>
+                                <th>Density</th>
+                                <th>pH</th>
+                                <th>Sulphates</th>
+                                <th>Alcohol</th>
+                                <th>Quality</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wineTableBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function deleteRecord(recordId) {
+            const response = await fetch(`/redwine/${recordId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                window.location.href = `/redwine_view/index`;
+            } else {
+                // Handle error
+            }
+        }
+
+        function confirmDelete(recordId) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                // User confirmed, proceed with deletion
+                deleteRecord(recordId);
+            }
+        }
+
+        async function fetchWineRecords() {
+            const response = await fetch('/redwine/');
+            const data = await response.json();
+
+            const wineTableBody = document.getElementById('wineTableBody');
+            wineTableBody.innerHTML = '';
+
+            data.forEach(record => {
+                wineTableBody.innerHTML += `
+                    <tr>
+                        <td>${record.id}</td>
+                        <td>${record.fixed_acidity}</td>
+                        <td>${record.volatile_acidity}</td>
+                        <td>${record.citric_acid}</td>
+                        <td>${record.residual_sugar}</td>
+                        <td>${record.chlorides}</td>
+                        <td>${record.free_sulfur_dioxide}</td>
+                        <td>${record.total_sulfur_dioxide}</td>
+                        <td>${record.density}</td>
+                        <td>${record.pH}</td>
+                        <td>${record.sulphates}</td>
+                        <td>${record.alcohol}</td>
+                        <td>${record.quality}</td>
+                        <td>
+                            <a href="/redwine_view/update?id=${record.id}" class="btn btn-sm btn-info">Edit</a>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete(${record.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        fetchWineRecords();
+    </script>
+</body>
+</html>

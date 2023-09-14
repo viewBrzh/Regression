@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Data Input</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Wine Data Input</h1>
+        <form id="wineDataForm">
+            <!-- Input fields for Wine Data -->
+            <div class="form-group">
+                <label for="fixed_acidity">Fixed Acidity</label>
+                <input type="text" class="form-control" id="fixed_acidity" name="fixed_acidity" required>
+            </div>
+            <div class="form-group">
+                <label for="volatile_acidity">Volatile Acidity</label>
+                <input type="text" class="form-control" id="volatile_acidity" name="volatile_acidity" required>
+            </div>
+            <div class="form-group">
+                <label for="citric_acid">Citric Acid</label>
+                <input type="text" class="form-control" id="citric_acid" name="citric_acid" required>
+            </div>
+            <div class="form-group">
+                <label for="residual_sugar">Residual Sugar</label>
+                <input type="text" class="form-control" id="residual_sugar" name="residual_sugar" required>
+            </div>
+            <div class="form-group">
+                <label for="chlorides">Chlorides</label>
+                <input type="text" class="form-control" id="chlorides" name="chlorides" required>
+            </div>
+            <div class="form-group">
+                <label for="free_sulfur_dioxide">Free Sulfur Dioxide</label>
+                <input type="text" class="form-control" id="free_sulfur_dioxide" name="free_sulfur_dioxide" required>
+            </div>
+            <div class="form-group">
+                <label for="total_sulfur_dioxide">Total Sulfur Dioxide</label>
+                <input type="text" class="form-control" id="total_sulfur_dioxide" name="total_sulfur_dioxide" required>
+            </div>
+            <div class="form-group">
+                <label for="density">Density</label>
+                <input type="text" class="form-control" id="density" name="density" required>
+            </div>
+            <div class="form-group">
+                <label for="pH">pH</label>
+                <input type="text" class="form-control" id="pH" name="pH" required>
+            </div>
+            <div class="form-group">
+                <label for="sulphates">Sulphates</label>
+                <input type="text" class="form-control" id="sulphates" name="sulphates" required>
+            </div>
+            <div class="form-group">
+                <label for="alcohol">Alcohol</label>
+                <input type="text" class="form-control" id="alcohol" name="alcohol" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-2">Submit Wine Data</button>
+        </form>
+        <div id="submissionResult" class="mt-4"></div>
+    </div>
+
+    <!-- Popup HTML -->
+    <div class="modal" id="responsePopup" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submission Result</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="popupResult">
+                    <!-- Response content will be displayed here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const wineDataForm = document.getElementById('wineDataForm');
+        const submissionResult = document.getElementById('submissionResult');
+        const popupResult = document.getElementById('popupResult');
+
+        wineDataForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(wineDataForm);
+
+            const response = await fetch('/redwine_models/predict', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData.entries())),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                displaySubmissionResult(result);
+            } else {
+                // Handle error
+            }
+        });
+
+        function displaySubmissionResult(result) {
+            const predictedQuality = result.quality;
+
+            popupResult.innerHTML = `
+                <h2>Submission Result</h2>
+                <p>Predicted Quality: ${predictedQuality}</p>
+            `;
+
+            responsePopup.style.display = 'block';
+        }
+
+
+
+    </script>
+</body>
+</html>

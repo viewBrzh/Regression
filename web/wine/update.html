@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Wine Data Record</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Update Wine Data Record</h1>
+        <form id="updateForm">
+            <!-- Input fields for Wine Data -->
+            <div class="form-group">
+                <label for="fixed_acidity">Fixed Acidity</label>
+                <input type="text" class="form-control" id="fixed_acidity" name="fixed_acidity" required>
+            </div>
+            <div class="form-group">
+                <label for="volatile_acidity">Volatile Acidity</label>
+                <input type="text" class="form-control" id="volatile_acidity" name="volatile_acidity" required>
+            </div>
+            <div class="form-group">
+                <label for="citric_acid">Citric Acid</label>
+                <input type="text" class="form-control" id="citric_acid" name="citric_acid" required>
+            </div>
+            <div class="form-group">
+                <label for="residual_sugar">Residual Sugar</label>
+                <input type="text" class="form-control" id="residual_sugar" name="residual_sugar" required>
+            </div>
+            <div class="form-group">
+                <label for="chlorides">Chlorides</label>
+                <input type="text" class="form-control" id="chlorides" name="chlorides" required>
+            </div>
+            <div class="form-group">
+                <label for="free_sulfur_dioxide">Free Sulfur Dioxide</label>
+                <input type="text" class="form-control" id="free_sulfur_dioxide" name="free_sulfur_dioxide" required>
+            </div>
+            <div class="form-group">
+                <label for="total_sulfur_dioxide">Total Sulfur Dioxide</label>
+                <input type="text" class="form-control" id="total_sulfur_dioxide" name="total_sulfur_dioxide" required>
+            </div>
+            <div class="form-group">
+                <label for="density">Density</label>
+                <input type="text" class="form-control" id="density" name="density" required>
+            </div>
+            <div class="form-group">
+                <label for="pH">pH</label>
+                <input type="text" class="form-control" id="pH" name="pH" required>
+            </div>
+            <div class="form-group">
+                <label for="sulphates">Sulphates</label>
+                <input type="text" class="form-control" id="sulphates" name="sulphates" required>
+            </div>
+            <div class="form-group">
+                <label for="alcohol">Alcohol</label>
+                <input type="text" class="form-control" id="alcohol" name="alcohol" required>
+            </div>
+            <div class="form-group">
+                <label for="quality">Quality</label>
+                <input type="number" class="form-control" id="quality" name="quality" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-2">Update Record</button>
+        </form>
+        <div id="updateResult" class="mt-4"></div>
+    </div>
+
+    <script>
+        const updateForm = document.getElementById('updateForm');
+        const recordIdField = document.getElementById('recordId');
+        
+        // Extract record ID from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const recordId = urlParams.get('id');
+        
+        // Fill the hidden input field with the record ID
+        recordIdField.value = recordId;
+        
+        // Fetch and populate data for the record
+        async function populateFormData() {
+            const response = await fetch(`/redwine/${recordId}`);
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Populate the form fields with Wine Data
+                document.getElementById('fixed_acidity').value = data.fixed_acidity;
+                document.getElementById('volatile_acidity').value = data.volatile_acidity;
+                document.getElementById('citric_acid').value = data.citric_acid;
+                document.getElementById('residual_sugar').value = data.residual_sugar;
+                document.getElementById('chlorides').value = data.chlorides;
+                document.getElementById('free_sulfur_dioxide').value = data.free_sulfur_dioxide;
+                document.getElementById('total_sulfur_dioxide').value = data.total_sulfur_dioxide;
+                document.getElementById('density').value = data.density;
+                document.getElementById('pH').value = data.pH;
+                document.getElementById('sulphates').value = data.sulphates;
+                document.getElementById('alcohol').value = data.alcohol;
+                document.getElementById('quality').value = data.quality;
+                // Populate more fields for other Wine Data features as needed
+                
+            } else {
+                // Handle error
+            }
+        }
+    
+        updateForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+    
+            const formData = new FormData(updateForm);
+    
+            const response = await fetch(`/redwine/${recordId}`, {
+                method: 'PUT',
+                body: JSON.stringify(Object.fromEntries(formData.entries())),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (response.ok) {
+                // Handle success, redirect or show a message
+                window.location.href = `/redwine_view/index`;
+            } else {
+                // Handle error
+            }
+        });
+    
+        // Populate the form fields with existing data when the page loads
+        populateFormData();
+    </script>
+    
+</body>
+</html>
